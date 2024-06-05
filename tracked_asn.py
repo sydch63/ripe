@@ -10,6 +10,7 @@ dct_tracked = {}
 
 for as_set in has_tracked_asn:
     as_set_obj = AsExpander(as_set)
+    dct_tracked[as_set] = {}
     for asn in tracked_asn:
         if as_set_obj.asns.get(asn) != None:
             if dct_tracked.get(as_set) == None:
@@ -23,12 +24,35 @@ for as_set in has_tracked_asn:
 # т.к. от другого компьютера за требуемое время не получен нужный отклик, или
 # было разорвано уже установленное соединение из-за неверного отклика уже подключенного компьютера>
 
+def get_str_in_set(set):
+    return as_set_obj.asns.get(asn).copy().pop()
+
 for asn in tracked_asn:
-    if as_set_obj.asns.get(asn) != None:
-        if dct_tracked.get(as_set) == None:
-            dct_tracked[as_set] = {as_set_obj.asns.get(asn).copy().pop():[asn]}
+    if as_set_obj.asns.get(asn) is not None:
+        if dct_tracked.get(as_set) is None:
+            if as_set_obj.asns.get(asn).copy().pop() in dct_tracked[as_set].keys():
+                dct_tracked[as_set][as_set_obj.asns.get(asn).copy().pop()].append(asn)
+            else:
+                dct_tracked[as_set] = {as_set_obj.asns.get(asn).copy().pop():[asn]}
+        else:
+            if as_set_obj.asns.get(asn).copy().pop() in dct_tracked[as_set].keys():
+                dct_tracked[as_set][as_set_obj.asns.get(asn).copy().pop()].append(asn)
+            else:
+                dct_tracked[as_set] = {as_set_obj.asns.get(asn).copy().pop(): [asn]}
+
+for asn in tracked_asn:
+    if as_set_obj.asns.get(asn) is not None:
+        if dct_tracked.get(as_set) is None:
+            dct_tracked[as_set] = {as_set_obj.asns.get(asn).copy().pop(): [asn]}
+            dct_tracked[as_set].setdefault(as_set_obj.asns.get(asn).copy().pop(),[asn])
+            if dct_tracked.get(as_set).get(as_set_obj.asns.get(asn).copy().pop()) is None:
+                dct_tracked[as_set] = {as_set_obj.asns.get(asn).copy().pop():[asn]}
+            else:
+                dct_tracked[as_set] = {as_set_obj.asns.get(asn).copy().pop(): [asn]}
         else:
             #значения для одного и того же ассет не плюсуются , они перезаписываются надо исправлять
             #dct_tracked[as_set][as_set_obj.asns.get(asn).copy().pop()] += f',{str(asn)}'
-            dct_tracked[as_set] = {as_set_obj.asns.get(asn).copy().pop(): [asn]}
-            dct_tracked[as_set][as_set_obj.asns.get(asn).copy().pop()].append(asn)
+            if dct_tracked.get(as_set).get(as_set_obj.asns.get(asn).copy().pop()) is None:
+                dct_tracked[as_set] = {as_set_obj.asns.get(asn).copy().pop(): [asn]}
+            else:
+                dct_tracked[as_set][as_set_obj.asns.get(asn).copy().pop()].append(asn)
